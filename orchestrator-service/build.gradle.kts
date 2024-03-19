@@ -22,7 +22,6 @@ val postgresqlVersion = "42.7.3"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion")
     implementation("org.liquibase:liquibase-core:$liquibaseVersion")
     implementation("org.postgresql:postgresql:$postgresqlVersion")
 
@@ -31,6 +30,17 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
+tasks {
+    bootJar {
+        archiveFileName.set("orchestrator-service.jar")
+        archiveClassifier = "boot"
+    }
+
+    jar {
+        enabled = false
+    }
+
+    test {
+        useJUnitPlatform()
+    }
 }

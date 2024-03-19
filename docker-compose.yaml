@@ -1,0 +1,36 @@
+version: '3.8'
+
+networks:
+  app:
+    driver: bridge
+
+services:
+  orchestrator-db:
+    container_name: orchestrator-db
+    image: postgres:16.2
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${ORCHESTRATOR_DB_USER}
+      POSTGRES_PASSWORD: ${ORCHESTRATOR_DB_PASSWORD}
+      POSTGRES_DB: orchestrator-db
+    restart: always
+
+  orchestrator:
+    container_name: orchestrator
+    restart: unless-stopped
+    networks:
+      - app
+    ports:
+      - "8090:8090"
+    build:
+      dockerfile: /orchestrator-service/Dockerfile
+    env_file:
+      - .env
+    environment:
+      ORCHESTRATOR_DB_USER: ${ORCHESTRATOR_DB_USER}
+      ORCHESTRATOR_DB_PASSWORD: ${ORCHESTRATOR_DB_PASSWORD}
+      ORCHESTRATOR_DB_HOST: ${ORCHESTRATOR_DB_HOST}
+      ORCHESTRATOR_DB_PORT: ${ORCHESTRATOR_DB_PORT}
+    depends_on:
+      - orchestrator-db
